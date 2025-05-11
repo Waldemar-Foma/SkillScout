@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-4">Мой профиль</h1>
+        
+        {% if profile %}
+        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h2 class="text-xl font-semibold mb-2">Результаты анализа</h2>
+            <p class="mb-2">Тип личности: <span class="font-bold">{{ profile.mbti_type }}</span></p>
+            <a href="{{ url_for('analysis', profile_id=profile.id) }}" 
+               class="text-blue-600 hover:underline">Подробнее</a>
+        </div>
+        {% endif %}
+        
+        <div class="flex space-x-4">
+            <a href="{{ url_for('upload_video') }}" 
+               class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                Загрузить видеовизитку
+            </a>
+            <a href="{{ url_for('profile', user_id=current_user.id) }}" 
+               class="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">
+                Мой профиль
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

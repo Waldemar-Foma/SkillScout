@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- Шапка профиля -->
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white">
+            <div class="flex flex-col md:flex-row items-center">
+                <!-- Аватар -->
+                <div class="relative mb-4 md:mb-0 md:mr-6">
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + (current_user.avatar if current_user.avatar else 'default.png')) }}?{{ range(1, 10000) | random }}" 
+                         class="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                         id="avatar-preview">
+                    <label for="avatar-upload" class="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition">
+                        <i class="fas fa-camera text-blue-600"></i>
+                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                    </label>
+                </div>
+                
+                <!-- Основная информация -->
+                <div class="flex-grow text-center md:text-left">
+                    <h1 class="text-2xl font-bold">{{ user.name }}</h1>
+                    <p class="text-blue-100">{{ user.email }}</p>
+                    
+                    {% if profile %}
+                    <div class="mt-2 flex flex-wrap justify-center md:justify-start gap-2">
+                        <span class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                            {{ profile.mbti_type }}
+                        </span>
+                        <span class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-medium">
+                            {{ 'Кандидат' if user.user_type == 'candidate' else 'Работодатель' }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Кнопка редактирования -->
+                {% if current_user.id == user.id %}
+                <button id="edit-profile-btn" class="mt-4 md:mt-0 bg-white text-blue-600 px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition">
+                    <i class="fas fa-edit mr-2"></i>Редактировать
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Основное содержимое -->
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Левая колонка -->
+                <div class="md:col-span-2">
+                    <!-- Форма редактирования -->
+                    <form id="profile-form" method="POST" action="{{ url_for('profile', user_id=user.id) }}" class="hidden bg-gray-50 p-4 rounded-lg mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-gray-700 mb-1">Имя</label>
+                                <input type="text" name="name" value="{{ user.name }}" 
+                                       class="w-full px-3 py-2 border rounded-md" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-1">Email</label>
+                                <input type="email" name="email" value="{{ user.email }}" 
+                                       class="w-full px-3 py-2 border rounded-md" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-1">О себе</label>
+                            <textarea name="bio" class="w-full px-3 py-2 border rounded-md h-24">{{ profile.about if profile and profile.about else '' }}</textarea>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancel-edit" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-300 transition">
+                                Отмена
+                            </button>
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                                Сохранить
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Просмотр информации -->
+                    <div id="profile-view" class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h2 class="text-xl font-semibold mb-3">Основная информация</h2>
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-gray-500">Имя:</span>
+                                <span class="ml-2 font-medium">{{ user.name }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Email:</span>
+                                <span class="ml-2 font-medium">{{ user.email }}</span>
+                            </div>
+                            {% if profile and profile.about %}
+                            <div>
+                                <span class="text-gray-500">О себе:</span>
+                                <p class="ml-2 mt-1 whitespace-pre-line">{{ profile.about }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Для кандидатов -->
+                    {% if user.user_type == 'candidate' and profile %}
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <h2 class="text-xl font-semibold mb-3">Психологический профиль</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h3 class="font-medium mb-2">MBTI</h3>
+                                <div class="bg-white p-3 rounded-md shadow-sm text-center">
+                                    <span class="text-2xl font-bold text-blue-600">{{ profile.mbti_type }}</span>
+                                    <p class="text-sm text-gray-500 mt-1">Тип личности</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-medium mb-2">OCEAN модель</h3>
+                                <div class="bg-white p-3 rounded-md shadow-sm">
+                                    {% for trait, score in profile.ocean_scores.items() %}
+                                    <div class="mb-2">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="capitalize">{{ trait }}</span>
+                                            <span>{{ "%.2f"|format(score) }}</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ score * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if current_user.id == user.id %}
+                        <div class="mt-4">
+                            <a href="{{ url_for('upload_video') }}" class="text-blue-600 hover:underline flex items-center">
+                                <i class="fas fa-video mr-2"></i> Обновить видеовизитку
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Правая колонка -->
+                <div>
+                    {% if user.user_type == 'candidate' and applications %}
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="text-xl font-semibold">Мои заявки</h2>
+                            <a href="{{ url_for('applications') }}" class="text-sm text-blue-600 hover:underline">Все</a>
+                        </div>
+                        <div class="space-y-3">
+                            {% for app in applications %}
+                            <div class="bg-white p-3 rounded-md shadow-sm border-l-4 
+                                {% if app.status == 'approved' %}border-green-500 bg-green-50
+                                {% elif app.status == 'rejected' %}border-red-500 bg-red-50
+                                {% else %}border-yellow-500 bg-yellow-50{% endif %}">
+                                <div class="flex justify-between">
+                                    <span class="font-medium">{{ app.position }}</span>
+                                    <span class="text-sm 
+                                        {% if app.status == 'approved' %}text-green-600
+                                        {% elif app.status == 'rejected' %}text-red-600
+                                        {% else %}text-yellow-600{% endif %}">
+                                        {{ 'Принята' if app.status == 'approved' else 
+                                           'Отклонена' if app.status == 'rejected' else 
+                                           'На рассмотрении' }}
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-500 mt-1">{{ app.company }}</div>
+                                <div class="text-sm text-gray-500">{{ app.applied_at.strftime('%d.%m.%Y') }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if current_user.id == user.id and user.user_type == 'employer' %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-semibold mb-3">Статистика</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Просмотров профиля</span>
+                                    <span class="font-medium">1,243</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Откликов на вакансии</span>
+                                    <span class="font-medium">42</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS загрузки аватара -->
+<script>
+    const uploadUrl = "{{ url_for('upload_video') }}";
+</script>
+
+{% raw %} 
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarUpload = document.getElementById('avatar-upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            
+            if (avatarUpload) {
+                avatarUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Проверка типа файла
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    if (!validTypes.includes(file.type)) {
+                        alert('Пожалуйста, выберите изображение в формате JPEG, PNG или GIF');
+                        return;
+                    }
+                    
+                    // Проверка размера файла
+                    if (file.size > {{ app.config['MAX_AVATAR_SIZE'] }}) {
+                        alert('Размер файла не должен превышать 2MB');
+                        return;
+                    }
+                    
+                    // Предпросмотр
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        avatarPreview.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    // Загрузка на сервер
+                    const formData = new FormData();
+                    formData.append('avatar', file);
+                    
+                    fetch('{{ url_for("upload_avatar") }}', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Обновляем аватар с параметром для избежания кэширования
+                            avatarPreview.src = data.avatar_url + '?' + new Date().getTime();
+                            alert('Аватар успешно обновлен!');
+                        } else {
+                            alert(data.error || 'Ошибка загрузки аватара');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Произошла ошибка при загрузке');
+                    });
+                });
+            }
+        });
+</script>
+{% endraw %}
+{% endblock %}

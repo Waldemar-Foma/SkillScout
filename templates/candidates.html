@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск кандидатов{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <!-- Заголовок -->
+        <div class="bg-indigo-600 text-white px-6 py-4">
+            <h1 class="text-2xl font-bold">Поиск кандидатов</h1>
+        </div>
+        
+        <div class="p-6">
+            <!-- Форма поиска -->
+            <form method="GET" class="mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">Тип MBTI</label>
+                        <select name="mbti" class="w-full px-3 py-2 border rounded-md">
+                            <option value="">Любой</option>
+                            {% for type in mbti_types %}
+                                <option value="{{ type }}" {% if request.args.get('mbti') == type %}selected{% endif %}>{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-2">Минимальная открытость</label>
+                        <input type="range" name="min_openness" min="0" max="1" step="0.1" 
+                               value="{{ request.args.get('min_openness', '0.5') }}" class="w-full">
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
+                            Найти
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Результаты поиска -->
+            <div class="space-y-4">
+                {% for candidate in candidates %}
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-lg">{{ candidate.user.name }}</h3>
+                            <p class="text-gray-600">MBTI: <span class="font-bold">{{ candidate.mbti_type }}</span></p>
+                        </div>
+                        <a href="{{ url_for('candidate_profile', id=candidate.id) }}" class="text-indigo-600 hover:text-indigo-800">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-gray-600 text-center py-8">Кандидаты не найдены</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

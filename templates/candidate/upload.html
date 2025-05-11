@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Загрузка видео{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Загрузите свою видеовизитку</h1>
+        
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition">
+                <input type="file" name="file" id="file" class="hidden" accept="video/*">
+                <label for="file" class="cursor-pointer">
+                    <div class="flex flex-col items-center justify-center space-y-3">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-indigo-500"></i>
+                        <p class="text-lg font-medium text-gray-700">Нажмите для выбора файла</p>
+                        <p class="text-sm text-gray-500">Поддерживаются форматы MP4, AVI (макс. 50MB)</p>
+                        <p id="file-name" class="text-sm font-medium text-indigo-600 mt-2"></p>
+                    </div>
+                </label>
+            </div>
+            
+            <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md font-medium hover:bg-indigo-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Анализировать видео
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('file').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || 'Файл не выбран';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+{% endblock %}
