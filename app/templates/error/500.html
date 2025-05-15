@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка сервера | SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="error-page">
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <span class="logo-blue">Skill</span>
+                    <span class="logo-green">Scout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+                        <li><a href="{{ url_for('main.about') }}">О нас</a></li>
+                        <li><a href="{{ url_for('main.contact') }}">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+<center>
+    <!-- Основное содержимое -->
+    <main class="error-content">
+        <div class="container">
+            <div class="error-code">500</div>
+            <h1 class="error-title">Ошибка сервера</h1>
+            <p class="error-message">
+                На сервере произошла непредвиденная ошибка. Мы уже работаем над решением проблемы.
+                Пожалуйста, попробуйте позже или свяжитесь с нашей поддержкой.
+            </p>
+            <div class="error-actions">
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary">На главную</a>
+                <a href="{{ url_for('main.contact') }}" class="btn btn-outline">Техподдержка</a>
+            </div>
+            <div class="error-image">
+                <img src="{{ url_for('static', filename='images/500-error.svg') }}" alt="Ошибка 500">
+            </div>
+        </div>
+    </main>
+</center>
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2025 SkillScout. Все права защищены.</p>
+                <div class="footer-legal">
+                    <a href="{{ url_for('main.index') }}">Главная</a>
+                    <a href="{{ url_for('main.contact') }}">Контакты</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

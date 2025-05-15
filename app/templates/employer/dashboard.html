@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h1>Кабинет работодателя</h1>
+  
+  <div class="profile-header">
+    <h2>{{ current_user.employer_profile.company_name }}</h2>
+    <a href="{{ url_for('employer.profile') }}" class="btn btn-outline">Редактировать профиль</a>
+  </div>
+  
+  <div class="vacancies-section">
+    <div class="section-header">
+      <h3>Мои вакансии</h3>
+      <a href="{{ url_for('employer.new_vacancy') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Новая вакансия
+      </a>
+    </div>
+    
+    {% for vacancy in vacancies %}
+    <div class="vacancy-card">
+      <div class="vacancy-info">
+        <h4>{{ vacancy.title }}</h4>
+        <p class="meta">
+          {{ vacancy.location }} • 
+          {{ vacancy.salary_range }} • 
+          {{ 'Удалённая работа' if vacancy.is_remote else 'Офис' }}
+        </p>
+        <p class="status-badge {{ vacancy.status }}">
+          {{ 'Активна' if vacancy.status == 'active' else 'В архиве' }}
+        </p>
+      </div>
+      <div class="vacancy-actions">
+        <a href="#" class="btn btn-sm">Редактировать</a>
+        <a href="#" class="btn btn-sm btn-outline">Кандидаты</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Регистрация компании</h2>
+    <form method="post" action="{{ url_for('main.register_employer') }}">
+        <div class="mb-3">
+            <label for="company_name" class="form-label">Название компании</label>
+            <input type="text" class="form-control" id="company_name" name="company_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Корпоративный Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password" name="password" required minlength="8">
+        </div>
+
+        <div class="mb-3">
+            <label for="industry" class="form-label">Отрасль</label>
+            <input type="text" class="form-control" id="industry" name="industry">
+        </div>
+
+        <div class="mb-3">
+            <label for="contact_person" class="form-label">Контактное лицо</label>
+            <input type="text" class="form-control" id="contact_person" name="contact_person">
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание компании</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Зарегистрировать компанию</button>
+    </form>
+</div>
+{% endblock %}

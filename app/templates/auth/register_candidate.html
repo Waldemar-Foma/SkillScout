@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Создание профиля кандидата</h2>
+    <form method="post" action="{{ url_for('main.register_candidate') }}">
+        <div class="mb-3">
+            <label for="fullname" class="form-label">ФИО</label>
+            <input type="text" class="form-control" id="fullname" name="fullname" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="password" name="password" required minlength="8">
+        </div>
+
+        <div class="mb-3">
+            <label for="field" class="form-label">Сфера деятельности</label>
+            <select class="form-select" id="field" name="field">
+                <option>IT</option>
+                <option>Маркетинг</option>
+                <option>Менеджмент</option>
+                <option>Дизайн</option>
+                <option>Другое</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="experience" class="form-label">Опыт работы</label>
+            <textarea class="form-control" id="experience" name="experience" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="skills" class="form-label">Ключевые навыки</label>
+            <input type="text" class="form-control" id="skills" name="skills" placeholder="Python, Teamwork, Agile">
+        </div>
+
+        <div class="mb-3">
+            <label for="video" class="form-label">Видеовизитка</label>
+            <input type="file" class="form-control" id="video" name="video" accept="video/mp4,video/quicktime">
+            <small class="form-text text-muted">Максимум 100 МБ. До 3 попыток.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Создать профиль</button>
+    </form>
+</div>
+{% endblock %}
