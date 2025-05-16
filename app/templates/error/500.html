@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка сервера | SkillScout{% endblock %}
+
+{% block content %}
+<main class="error-content">
+    <div class="container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Ошибка сервера</h1>
+        <p class="error-message">
+            На сервере произошла непредвиденная ошибка. Мы уже работаем над решением проблемы.<br>
+            Пожалуйста, попробуйте позже или свяжитесь с нашей поддержкой.
+        </p>
+        <div class="error-actions">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">На главную</a>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-outline">Техподдержка</a>
+        </div>
+        <div class="error-image">
+            <img src="{{ url_for('static', filename='images/500-error.svg') }}" alt="Ошибка 500">
+        </div>
+    </div>
+</main>
+{% endblock %}

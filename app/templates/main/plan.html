@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillScout - Функция недоступна</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">
+                    <img src="/static/images/logo.png" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <a href="/login" class="btn btn-outline btn-sm">Вход</a>
+                    <a href="/register" class="btn btn-primary btn-sm">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="coming-soon-container">
+            <div class="coming-soon-content">
+                <div class="coming-soon-icon">
+                    <i class="fas fa-cog fa-spin"></i>
+                </div>
+                <h1 class="coming-soon-title">Упс..Эта функция пока недоступна!</h1>
+                <p class="coming-soon-text">Но совсем скоро мы ее добавим</p>
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>&nbsp;Вернуться на главную
+                </a>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-links">
+                    <h5>SkillScout</h5>
+                    <p>Умная платформа для поиска работы и подбора кандидатов</p>
+                </div>
+                <div class="footer-links">
+                    <h5>Навигация</h5>
+                    <ul>
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Политика конфиденциальности</a>
+                    <a href="#">Условия использования</a>
+                </div>
+                <p>2025 © SkillScout</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
