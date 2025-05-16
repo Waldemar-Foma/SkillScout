@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вакансии | SkillScout</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="#" class="logo">
+                    <span class="logo-blue">Skill</span>
+                    <span class="logo-green">Scout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                        <li><a href="#for-candidates">Кандидатам</a></li>
+                        <li><a href="#for-employers">Работодателям</a></li>
+                        <li><a href="#testimonials">Отзывы</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <a href="/login" class="btn btn-outline">Войти</a>
+                    <a href="/register" class="btn btn-primary">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Подходящие вакансии</h1>
+                <div class="page-actions">
+                    <div class="search-box">
+                        <input type="text" placeholder="Поиск вакансий...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-toggle">
+                        <i class="fas fa-sliders-h"></i> Фильтры
+                    </div>
+                </div>
+            </div>
+            
+            <div class="vacancies-grid">
+                <div class="vacancy-card">
+                    <div class="vacancy-header">
+                        <h3>Frontend Developer (React)</h3>
+                        <div class="compatibility-badge">87% совместимость</div>
+                    </div>
+                    <div class="company-info">
+                        <img src="/images/company1.jpg" alt="Tech Innovations Inc.">
+                        <div>
+                            <h4>Tech Innovations Inc.</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> Москва / Удаленно</p>
+                        </div>
+                    </div>
+                    <div class="vacancy-meta">
+                        <span><i class="fas fa-money-bill-wave"></i> от 150 000 ₽</span>
+                        <span><i class="fas fa-clock"></i> Полный день</span>
+                    </div>
+                    <div class="vacancy-description">
+                        <p>Ищем frontend-разработчика с опытом работы от 3 лет. Наш стек: React, TypeScript, Redux.</p>
+                    </div>
+                    <div class="vacancy-footer">
+                        <button class="btn btn-primary">Откликнуться</button>
+                        <button class="btn btn-outline">Сохранить</button>
+                    </div>
+                </div>
+                
+                <!-- Другие вакансии -->
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Привет, {{ current_user.name }}!</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Profile Completion</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: {{ profile_completion }}%;">
+                            {{ profile_completion }}%
+                        </div>
+                    </div>
+                    <a href="{{ url_for('candidate.profile') }}" class="btn btn-primary">Complete Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <h3>Recommended Vacancies</h3>
+            {% for vacancy in recommended_vacancies %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ vacancy.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ vacancy.company }}</h6>
+                    <p class="card-text">{{ vacancy.short_description }}</p>
+                    <div class="compatibility-badge">
+                        <span class="badge bg-primary">Compatibility: {{ vacancy.compatibility }}%</span>
+                    </div>
+                    <a href="#" class="btn btn-outline-primary mt-2">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
