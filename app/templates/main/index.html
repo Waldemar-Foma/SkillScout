@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Герой-секция -->
+<section class="hero" id="home">
+    <div class="container">
+        <div class="vector-decor vector-left">
+            <img src="{{ url_for('static', filename='images/vector.png') }}" alt="Декоративный элемент">
+        </div>
+        <div class="vector-decor vector-right">
+            <img src="{{ url_for('static', filename='images/vector.png') }}" alt="Декоративный элемент">
+        </div>
+        
+        <div class="hero-content">
+        <div class="hero-content">
+            <h1 id="hero-title">СОЗДАВАЙ КАРЬЕРУ С НАМИ</h1>
+            <p class="hero-text" id="hero-text">SKILLSCOUT – УМНАЯ ПЛАТФОРМА ДЛЯ ПОИСКА РАБОТЫ И ПОДБОРА КАНДИДАТОВ</p>
+            {% if not current_user.is_authenticated %}
+            <div class="hero-actions">
+                <a href="{{ url_for('auth.register', role='candidate') }}" class="btn btn-primary" id="candidate-btn">Я кандидат</a>
+                <a href="{{ url_for('auth.register', role='employer') }}" class="btn btn-outline" id="employer-btn">Я работодатель</a>
+            </div>
+            {% else %}
+            <div class="hero-actions">
+                <a href="{{ url_for('main.questionnaire') }}" class="btn btn-primary">Заполнить анкету</a>
+                <a href="{{ url_for(current_user.role + '.profile') }}" class="btn btn-outline">Мой профиль</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- О платформе -->
+<section class="section light-bg">
+    <div class="container">
+        <div class="two-column">
+            <div class="column-content">
+                <h2><i class="fas fa-question-circle section-title-icon"></i>Что такое SkillScout?</h2>
+                <p id="platform-description">Возможно, это использование сборки, которую имеют подход к своему работе и оценку сотрудников. С помощью коррективного автоматизма мы выполняем примеры предварительной оценки, но в отношении которых чтобы обеспечить идеальное соглашение между коэффициентом работодателем.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Возможности -->
+<section id="features" class="section">
+    <div class="container">
+        <h2><i class="fas fa-star section-title-icon"></i>Уникальные возможности</h2>
+        <div class="features-grid">
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    <i class="fas fa-video"></i>
+                    <h4>Видеоанализ</h4>
+                </div>
+                <p id="feature1-desc">Автоматическая оценка эмоционального интеллекта, уверенности и коммуникативных навыков по видеовизитке</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check"></i> <span id="feature1-item1">Анализ мимики и жестов</span></li>
+                    <li><i class="fas fa-check"></i> <span id="feature1-item2">Оценка тембра и тона голоса</span></li>
+                    <li><i class="fas fa-check"></i> <span id="feature1-item3">Определение уровня стрессоустойчивости</span></li>
+                </ul>
+            </div>
+            
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    <i class="fas fa-brain"></i>
+                    <h4>Психологический профиль</h4>
+                </div>
+                <p id="feature2-desc">Определение MBTI-типа и ключевых черт характера</p>
+                <div class="psycho-metrics">
+                    <div class="metric">
+                        <h5 id="trait1-name">Экстраверсия</h5>
+                        <div class="trait-meter">
+                            <div class="trait-bar">
+                                <div class="trait-progress" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <h5 id="trait2-name">Добросовестность</h5>
+                        <div class="trait-meter">
+                            <div class="trait-bar">
+                                <div class="trait-progress" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-card">
+                <div class="analysis-title">
+                    <i class="fas fa-robot"></i>
+                    <h4>AI-совместимость</h4>
+                </div>
+                <p id="feature3-desc">Прогноз успешности работы кандидата в вашей команде</p>
+                <div class="compatibility-score">
+                    <span class="compatibility-value">89%</span>
+                    <span class="compatibility-label" id="compatibility-label">Совместимость</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Как это работает -->
+<section id="how-it-works" class="section light-bg">
+    <div class="container">
+        <h2><i class="fas fa-cogs section-title-icon"></i>Как это работает</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4 id="step1-title">Создание профиля</h4>
+                <p id="step1-text">Кандидаты записывают видеовизитку по нашему шаблону</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4 id="step2-title">AI-анализ</h4>
+                <p id="step2-text">Наша система анализирует речь, мимику и содержание видео</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4 id="step3-title">Подбор</h4>
+                <p id="step3-text">Работодатели находят идеальных кандидатов</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if not current_user.is_authenticated %}
+<section class="section cta-section">
+    <div class="container">
+        <div class="cta-box large">
+            <div class="stats-counter">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="127">0</div>
+                    <div class="stat-label">кружек кофе</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="4225">0</div>
+                    <div class="stat-label">строк кода</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="89">-809</div>
+                    <div class="stat-label">исправлено багов</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endif %}    
+{% endblock %}

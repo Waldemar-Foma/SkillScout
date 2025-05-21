@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация работодателя | SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Регистрация работодателя</h2>
+
+        <!-- Flash-сообщения -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.company_name.label }}
+                {{ form.company_name(class="form-control") }}
+                {% if form.company_name.errors %}
+                    <div class="form-error">{{ form.company_name.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.industry.label }}
+                {{ form.industry(class="form-control") }}
+                {% if form.industry.errors %}
+                    <div class="form-error">{{ form.industry.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.contact_person.label }}
+                {{ form.contact_person(class="form-control") }}
+                {% if form.contact_person.errors %}
+                    <div class="form-error">{{ form.contact_person.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+                {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+                {% if form.password.errors %}
+                    <div class="form-error">{{ form.password.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password2.label }}
+                {{ form.password2(class="form-control") }}
+                {% if form.password2.errors %}
+                    <div class="form-error">{{ form.password2.errors[0] }}</div>
+                {% endif %}
+            </div>
+
+            <input type="hidden" name="role" value="employer">
+
+            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
+        </form>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-links">
+                <h5>SkillScout</h5>
+                <p>Умная платформа для поиска работы и подбора кандидатов</p>
+            </div>
+            <div class="footer-links">
+                <h5>Навигация</h5>
+                <ul>
+                    <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+                    <li><a href="#features">Возможности</a></li>
+                    <li><a href="#how-it-works">Как это работает</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Контакты</h5>
+                <ul>
+                    <li><a href="tel:+74951234567">+7 (495) 123-45-67</a></li>
+                    <li><a href="mailto:axel.t3chnologi3s@gmail.com">axel.t3chnologi3s@gmail.com</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-legal">
+                <a href="#">Политика конфиденциальности</a>
+                <a href="#">Условия использования</a>
+            </div>
+            <p>2025 © SkillScout</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
