@@ -9,37 +9,82 @@
     
     <div class="form-group">
       {{ form.profession.label }}
-      {{ form.profession(class="form-input") }}
+      {{ form.profession(class="form-control") }}
+      {% for error in form.profession.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
     </div>
     
     <div class="form-group">
       {{ form.experience.label }}
-      {{ form.experience(class="form-input") }}
+      {{ form.experience(class="form-control") }}
+      {% for error in form.experience.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
     </div>
     
     <div class="form-group">
       {{ form.skills.label }}
-      {{ form.skills(class="form-input") }}
-      <small>Перечислите навыки через запятую</small>
+      {{ form.skills(class="form-control") }}
+      <small class="form-text text-muted">Перечислите навыки через запятую</small>
+      {% for error in form.skills.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
     </div>
     
     <div class="form-group">
       {{ form.mbti_type.label }}
-      {{ form.mbti_type(class="form-input") }}
+      {{ form.mbti_type(class="form-control") }}
+      {% for error in form.mbti_type.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
     </div>
     
-    <div class="video-widget">
+    <div class="form-group">
       <h3>Видеовизитка</h3>
       {% if current_user.candidate_profile.video_resume %}
-        <video controls class="video-preview">
-          <source src="{{ current_user.candidate_profile.video_resume }}" type="video/mp4">
-        </video>
+        <div class="mb-3">
+          <video controls width="400">
+            <source src="{{ url_for('static', filename='uploads/videos/' + current_user.candidate_profile.video_resume.split('/')[-1]) }}" type="video/mp4">
+          </video>
+        </div>
       {% endif %}
-      {{ form.video_resume }}
-      <p class="text-sm">Макс. размер: 100MB. Форматы: MP4, MOV</p>
+      {{ form.video_resume(class="form-control-file") }}
+      <small class="form-text text-muted">Макс. размер: 100MB. Форматы: MP4, MOV</small>
+      {% for error in form.video_resume.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
     </div>
     
     <button type="submit" class="btn btn-primary">Сохранить</button>
   </form>
+
+  {% if current_user.videos %}
+  <div class="mt-5">
+    <h3>История видеоанализов</h3>
+    <div class="list-group">
+      {% for video in current_user.videos %}
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h5>{{ video.filename }}</h5>
+            <small>{{ video.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+          </div>
+          <div>
+            <a href="{{ url_for('candidate.analyze_video', video_id=video.id) }}" 
+               class="btn btn-sm btn-outline-primary">Анализировать</a>
+          </div>
+        </div>
+        {% if video.analysis %}
+        <div class="mt-2 p-2 bg-light">
+          <h6>Результаты:</h6>
+          <pre>{{ video.analysis|tojson(indent=2) }}</pre>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

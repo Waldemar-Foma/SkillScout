@@ -1,35 +1,83 @@
+import os
 import cv2
 import librosa
 import numpy as np
-from datetime import datetime
-import os
+from werkzeug.utils import secure_filename
+from flask import current_app
+from transformers import pipeline
+from deepface import DeepFace
+from app.extensions import db
+from app.models.candidate import CandidateVideo
+import subprocess
+import time
 
-def analyze_video(video_path):
-    # Emotion analysis with OpenCV
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+speech_analyzer = pipeline("text-classification", model="finiteautomata/bertweet-base-sentiment-analysis")
+
+def allowed_video(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_VIDEO_EXTENSIONS']
+
+def save_video_profile(user_id, video_file):
+    if not allowed_video(video_file.filename):
+        return None
+    
+    upload_folder = current_app.config['VIDEO_UPLOAD_FOLDER']
+    os.makedirs(upload_folder, exist_ok=True)
+    
+    filename = secure_filename(f"{user_id}_{video_file.filename}")
+    filepath = os.path.join(upload_folder, filename)
+    video_file.save(filepath)
+    
+    # Сохраняем запись в базу
+    video = CandidateVideo(
+        user_id=user_id,
+        filename=filename,
+        filepath=filepath
+    )
+    db.session.add(video)
+    db.session.commit()
+    
+    return filepath
+
+def analyze_video_content(video_path):
     cap = cv2.VideoCapture(video_path)
-    
+    if not cap.isOpened():
+        current_app.logger.error(f"Cannot open video: {video_path}")
+        return None
+
     emotions = []
-    speech_rate = []
-    
-    while cap.isOpened():
+
+    while True:
         ret, frame = cap.read()
         if not ret:
             break
-            
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-        
-        # Simple emotion detection (placeholder for real model)
-        if len(faces) > 0:
-            emotions.append('neutral')  # Replace with real emotion detection
-    
-    # Audio analysis with Librosa
-    y, sr = librosa.load(video_path)
-    tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-    
+
+        if int(cap.get(cv2.CAP_PROP_POS_FRAMES)) % 10 == 0:
+            try:
+                analysis = DeepFace.analyze(frame, actions=['emotion'], enforce_detection=False)
+                emotions.append(analysis['dominant_emotion'])
+            except Exception as e:
+                current_app.logger.error(f"Emotion analysis error: {e}")
+
+    cap.release()
+
+    audio_path = os.path.join(current_app.config['VIDEO_UPLOAD_FOLDER'], 'temp_audio.mp3')
+    try:
+        subprocess.run([
+            "ffmpeg", "-y", "-i", video_path, "-q:a", "0", "-map", "a", audio_path
+        ], check=True)
+        y, sr = librosa.load(audio_path)
+        os.remove(audio_path)
+    except Exception as e:
+        current_app.logger.error(f"Audio extraction or processing error: {e}")
+        y, sr = None, None
+
+    speech_rate = 0
+    if y is not None and sr is not None:
+        speech_rate = len(librosa.effects.split(y, top_db=30)) / (len(y)/sr) * 60
+
     return {
-        'emotions': emotions,
-        'speech_tempo': tempo,
-        'analysis_date': datetime.utcnow().isoformat()
+        'emotions': max(set(emotions), key=emotions.count) if emotions else 'neutral',
+        'speech_rate': speech_rate,
     }

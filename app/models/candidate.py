@@ -1,5 +1,6 @@
 from app.extensions import db
 
+
 class CandidateProfile(db.Model):
     __tablename__ = 'candidate_profiles'
 
@@ -15,3 +16,17 @@ class CandidateProfile(db.Model):
 
     def __repr__(self):
         return f'<CandidateProfile {self.id}>'
+
+class CandidateVideo(db.Model):
+    __tablename__ = 'candidate_videos'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    filename = db.Column(db.String(255))
+    filepath = db.Column(db.String(255))
+    analysis = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    status = db.Column(db.String(20), default='uploaded')
+
+    def __repr__(self):
+        return f'<CandidateVideo {self.id}>'

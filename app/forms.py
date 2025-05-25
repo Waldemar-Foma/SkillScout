@@ -4,21 +4,30 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Le
 from app.models.user import User
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(message='Введите email'), Email(message='Некорректный email')])
+    password = PasswordField('Пароль', validators=[DataRequired(message='Введите пароль')])
     remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Sign In')
+    submit = SubmitField('Войти')
 
 class UnifiedRegistrationForm(FlaskForm):
     role = SelectField('Выберите роль', choices=[
         ('candidate', 'Кандидат'),
         ('employer', 'Работодатель')
-    ], validators=[DataRequired()])
+    ], validators=[DataRequired(message='Выберите роль')])
 
     # Общие поля
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=8)])
-    password2 = PasswordField('Повторите пароль', validators=[DataRequired(), EqualTo('password')])
+    email = StringField('Email', validators=[
+        DataRequired(message='Введите email'),
+        Email(message='Некорректный email')
+    ])
+    password = PasswordField('Пароль', validators=[
+        DataRequired(message='Введите пароль'),
+        Length(min=8, message='Пароль должен содержать минимум 8 символов')
+    ])
+    password2 = PasswordField('Повторите пароль', validators=[
+        DataRequired(message='Подтвердите пароль'),
+        EqualTo('password', message='Пароли не совпадают')
+    ])
 
     # Поля кандидата
     fullname = StringField('ФИО')  # Только для кандидата
@@ -36,8 +45,16 @@ class UnifiedRegistrationForm(FlaskForm):
 
     submit = SubmitField('Зарегистрироваться')
 
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('Пользователь с таким email уже существует.')
+
 class ForgotPasswordForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[
+        DataRequired(message='Введите email'),
+        Email(message='Некорректный email')
+    ])
     submit = SubmitField('Отправить инструкции')
 
     def validate_email(self, email):
@@ -46,7 +63,30 @@ class ForgotPasswordForm(FlaskForm):
             raise ValidationError('Аккаунт с таким email не найден')
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Новый пароль', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Повторите пароль', validators=[DataRequired(), EqualTo('password')])
+    password = PasswordField('Новый пароль', validators=[DataRequired(message='Введите пароль')])
+    password2 = PasswordField('Повторите пароль', validators=[
+        DataRequired(message='Подтвердите пароль'),
+        EqualTo('password', message='Пароли не совпадают')
+    ])
     submit = SubmitField('Изменить пароль')
+
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SelectField, SubmitField
+from wtforms.validators import DataRequired, Optional
+
+class QuestionnaireForm(FlaskForm):
+    fullname = StringField('ФИО', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
+    profession = StringField('Профессия', validators=[DataRequired()])
+    experience = TextAreaField('Опыт работы', validators=[Optional()])
+    skills = StringField('Навыки', validators=[Optional()])
+    mbti_type = SelectField('MBTI тип', choices=[
+        ('INTJ', 'INTJ'), ('INFJ', 'INFJ'), ('ENFP', 'ENFP'),
+        ('ENTP', 'ENTP'), ('ISTJ', 'ISTJ'), ('ISFJ', 'ISFJ'),
+        ('ESTJ', 'ESTJ'), ('ESFJ', 'ESFJ'), ('INFP', 'INFP'),
+        ('ENFJ', 'ENFJ'), ('ISFP', 'ISFP'), ('ESFP', 'ESFP'),
+        ('ISTP', 'ISTP'), ('ESTP', 'ESTP'), ('ENTJ', 'ENTJ')
+    ], validators=[Optional()])
+    submit = SubmitField('Сохранить')
+

@@ -5,6 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from app.extensions import db
 from app.forms import LoginForm, UnifiedRegistrationForm, ForgotPasswordForm
 from app.models.user import User
+from app.forms import QuestionnaireForm
+
 
 main_bp = Blueprint('main', __name__)
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -24,10 +26,16 @@ def about():
 def contact():
     return render_template('main/contact.html')
 
-@main_bp.route('/questionnaire')
+@main_bp.route('/questionnaire', methods=['GET', 'POST'])
+@login_required
 def questionnaire():
-    return render_template('main/questionnaire.html')
+    form = QuestionnaireForm()
 
+    if form.validate_on_submit():
+        flash('Анкета успешно сохранена!', 'success')
+        return redirect(url_for('main.index'))
+
+    return render_template('main/questionnaire.html', form=form)
 
 # Аутентификация
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])

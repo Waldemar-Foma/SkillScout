@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template
 from app.extensions import db, login_manager, mail, migrate, csrf
+from app.api.video import video_bp
 
 def create_app(config_class='config.Config'):
     app = Flask(__name__, static_folder='static')

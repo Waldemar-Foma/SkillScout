@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(20), nullable=False)
 
-    # Добавь нужные поля для кандидата
+    # Поля для кандидата
     fullname = db.Column(db.String(150))
     field = db.Column(db.String(100))
     experience = db.Column(db.Text)
@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
 
     candidate_profile = db.relationship('CandidateProfile', back_populates='user', uselist=False)
     employer_profile = db.relationship('EmployerProfile', back_populates='user', uselist=False)
-
+    videos = db.relationship('CandidateVideo', backref='user', lazy=True)
 
     def __repr__(self):
         return f'<User {self.email}>'
