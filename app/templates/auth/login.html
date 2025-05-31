@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход в SkillScout</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body class="auth-page">
+  <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('main.index') }}">Вернуться на главнаю</a></li>
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('main.questionnaire') }}">Анкета</a></li>
+                            <li><a href="{{ url_for(current_user.role + '.profile') }}">Профиль</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+  <main class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Вход в систему</h1>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          <label for="email" class="form-label">
+            <i class="fas fa-user icon-left"></i>
+            Email
+          </label>
+          {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="your@email.com") }}
+          {% for error in form.email.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="fas fa-lock icon-left"></i>
+            Пароль
+          </label>
+          {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
+          {% for error in form.password.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-options">
+          <div class="form-check">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label") }}
+          </div>
+          <a href="{{ url_for('auth.forgot_password') }}" class="forgot-password">Забыли пароль?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Войти</button>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="auth-footer">
+          <p>
+            Нет аккаунта?
+            <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-links">
+          <h5>SkillScout</h5>
+          <p>Умная платформа для поиска работы и подбора кандидатов</p>
+        </div>
+        <div class="footer-links">
+          <h5>Навигация</h5>
+          <ul>
+            <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+            <li><a href="#features">Возможности</a></li>
+            <li><a href="#how-it-works">Как это работает</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h5>Контакты</h5>
+          <ul>
+            <li><a href="tel:+74951234567">+7 (495) 123-45-67</a></li>
+            <li><a href="mailto:axel.t3chnologi3s@gmail.com">axel.t3chnologi3s@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Условия использования</a>
+        </div>
+        <p>2025 © SkillScout</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

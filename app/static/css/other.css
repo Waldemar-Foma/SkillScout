@@ -1,0 +1,164 @@
+/* ============ Общие стили ============ */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F3F3F5;
+    color: #070707;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    color: #070707;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+
+ul {
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+li {
+    margin-bottom: 0.5em;
+}
+
+/* ============ Хедер ============ */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dfdfdf;
+    flex-wrap: wrap;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.logo-link img {
+    height: 32px;
+    width: auto;
+}
+
+/* ============ Языковой переключатель ============ */
+.language-switcher {
+    display: flex;
+    gap: 12px;
+}
+
+.language-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #070707;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 6px;
+}
+
+.language-btn:hover {
+    background-color: #e9e9e9;
+}
+
+.language-btn.active {
+    border-color: #193c86;
+    background-color: #ffffff;
+    color: #1A4BB0;
+    font-weight: 600;
+}
+
+.language-btn img {
+    width: 20px;
+    height: 14px;
+}
+
+/* ============ Обёртка контента ============ */
+.content-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* ============ Метка обновления ============ */
+.last-update {
+    display: block;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* ============ Блоки: примечание, контакты и пр. ============ */
+.note-block, .contact-block {
+    background-color: #F9F6F0;
+    border-left: 4px solid #193c86;
+    padding: 1rem 1.2rem;
+    margin: 2rem 0;
+    border-radius: 6px;
+}
+
+.note-block h3, .contact-block h2 {
+    margin-top: 0;
+}
+
+/* ============ Скрытие контента ============ */
+.hidden {
+    display: none;
+}
+
+/* ============ Адаптивность ============ */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .language-switcher {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .content-container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+}
