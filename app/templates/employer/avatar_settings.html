@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки аватара - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('employer.dashboard') }}">Дашборд</a></li>
+                        <li><a href="{{ url_for('employer.profile') }}">Профиль</a></li>
+                        <li><a href="{{ url_for('employer.settings') }}">Настройки</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 100px; padding: 2rem;">
+        <h1>Настройки логотипа компании</h1>
+        
+        <div class="auth-card">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.avatar.label(class="form-label") }}
+                    {{ form.avatar(class="form-control") }}
+                    {% for error in form.avatar.errors %}
+                        <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-actions">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('employer.profile') }}" class="btn btn-outline">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

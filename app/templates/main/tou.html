@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/other.css') }}">
+    <title>Условия использования SkillScout</title>
+</head>
+<body>
+     <header class="header">
+        <a href="{{ url_for('main.index') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Вернуться на главную">
+            SkillScout
+        </a>
+
+        <div class="language-switcher">
+            <button class="language-btn active">
+                <img src="/static/images/ru.svg" alt="RU"> Русский
+            </button>
+            <button class="language-btn">
+                <img src="/static/images/en.svg" alt="EN"> English
+            </button>
+        </div>
+    </header>
+
+    <div class="content-container">
+        <div id="ru-content">
+            <h1>Условия использования сайта SkillScout</h1>
+            <span class="last-update">Дата последнего обновления: 10.05.2025</span>
+
+            <h2>1. Введение</h2>
+            <p>SkillScout («Платформа», «Сервис» или «Сайт») — это AI-платформа для поиска работы и подбора кандидатов, использующая видеоанализ, поведенческие метрики и алгоритмы совместимости.</p>
+            <p>Настоящие Условия использования («Условия») регулируют ваше взаимодействие с Сайтом. Пользуясь SkillScout, вы соглашаетесь соблюдать эти правила. Если вы не согласны, пожалуйста, не используйте Платформу.</p>
+
+            <h2>2. Определения</h2>
+            <p><strong>Пользователь</strong> — любое лицо (кандидат, работодатель или администратор), использующее SkillScout.</p>
+            <ul>
+                <li><strong>Кандидат</strong> — пользователь, размещающий профиль для поиска работы.</li>
+                <li><strong>Работодатель</strong> — пользователь (компания или HR-специалист), размещающий вакансии и ищущий кандидатов.</li>
+                <li><strong>Контент</strong> — любые данные, загружаемые на Платформу: тексты, видео, документы, изображения.</li>
+            </ul>
+
+            <h2>3. Регистрация и учетная запись</h2>
+            <h3>3.1. Требования:</h3>
+            <ul>
+                <li>Для регистрации необходимо предоставить достоверные данные (имя, email, профессиональная информация).</li>
+                <li>Запрещено создавать фейковые профили или использовать чужие данные.</li>
+                <li>Минимальный возраст пользователя — 18 лет.</li>
+            </ul>
+
+            <div class="contact-block">
+                <h2>10. Заключительные положения</h2>
+                <p><strong>Контакты поддержки:</strong> AXL-TECH@BK.RU</p>
+                <p><strong>Применимое право:</strong> Российская Федерация</p>
+                <p>Все споры решаются путем переговоров с владельцами платформы.</p>
+            </div>
+        </div>
+
+        <div id="en-content" class="hidden">
+            <h1>SkillScout Terms of Use</h1>
+            <span class="last-update">Last updated: May 10, 2025</span>
+
+            <h2>1. Introduction</h2>
+            <p>SkillScout ("Platform", "Service" or "Site") is an AI-powered platform for job search and candidate matching that uses video analysis, behavioral metrics, and compatibility algorithms.</p>
+            <p>These Terms of Use ("Terms") govern your interaction with the Site. By using SkillScout, you agree to comply with these rules. If you disagree, please do not use the Platform.</p>
+
+            <h2>2. Definitions</h2>
+            <p><strong>User</strong> - any person (candidate, employer or administrator) using SkillScout.</p>
+            <ul>
+                <li><strong>Candidate</strong> - a user creating a profile to search for jobs.</li>
+                <li><strong>Employer</strong> - a user (company or HR specialist) posting vacancies and searching for candidates.</li>
+                <li><strong>Content</strong> - any data uploaded to the Platform: texts, videos, documents, images.</li>
+            </ul>
+
+            <h2>3. Registration and Account</h2>
+            <h3>3.1. Requirements:</h3>
+            <ul>
+                <li>Registration requires providing accurate data (name, email, professional information).</li>
+                <li>Creating fake profiles or using others' data is prohibited.</li>
+                <li>Minimum user age is 18 years.</li>
+            </ul>
+
+            <div class="contact-block">
+                <h2>10. Final Provisions</h2>
+                <p><strong>Support contact:</strong> AXL-TECH@BK.RU</p>
+                <p><strong>Governing law:</strong> Russian Federation</p>
+                <p>All disputes are resolved through negotiations with the platform owners.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+</body>
+</html>

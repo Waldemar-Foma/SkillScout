@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillScout - Функция недоступна</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">
+                    <img src="/static/images/logo.png" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="/">Главная</a></li>
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <a href="/login" class="btn btn-outline btn-sm">Вход</a>
+                    <a href="/register" class="btn btn-primary btn-sm">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="coming-soon-container">
+            <div class="coming-soon-content">
+                <div class="coming-soon-icon">
+                    <i class="fas fa-cog fa-spin"></i>
+                </div>
+                <h1 class="coming-soon-title">Упс..Эта функция пока недоступна!</h1>
+                <p class="coming-soon-text">Но совсем скоро мы ее добавим</p>
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>&nbsp;Вернуться на главную
+                </a>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+    <div class="container">
+        <div class="footer-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+            <span class="footer-logo-text">SkillScout</span>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h5 class="footer-title">МЕНЮ</h5>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                <div class="social-circles">
+                    <a href="https://t.me/axel_Invincible" class="social-circle">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/axl_invincible" class="social-circle">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    <a href="#" class="social-circle">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                <h4 class="support-email">
+                    <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                </h4>
+                <div id="copyOverlay" class="overlay">
+                    <div class="overlay-content">
+                        <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-left">
+                <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+            </div>
+            <div class="footer-bottom-center">
+                <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+            </div>
+            <div class="footer-bottom-right">
+                <p class="copyright">2025 © SkillScout</p>
+            </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

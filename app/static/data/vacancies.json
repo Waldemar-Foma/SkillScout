@@ -1,0 +1,39 @@
+{
+    "vacancies": [
+        {
+            "title": "Frontend разработчик",
+            "company": "TechCorp",
+            "salary": "от 120 000 ₽"
+        },
+        {
+            "title": "Python разработчик",
+            "company": "DataSystems",
+            "salary": "от 150 000 ₽"
+        },
+        {
+            "title": "Менеджер проектов",
+            "company": "DigitalAgency",
+            "salary": "от 100 000 ₽"
+        },
+        {
+            "title": "UX/UI дизайнер",
+            "company": "CreativeStudio",
+            "salary": "от 90 000 ₽"
+        },
+        {
+            "title": "Аналитик данных",
+            "company": "FinanceGroup",
+            "salary": "от 130 000 ₽"
+        },
+        {
+            "title": "DevOps инженер",
+            "company": "CloudTech",
+            "salary": "от 180 000 ₽"
+        },
+        {
+            "title": "Маркетолог",
+            "company": "AdvertPro",
+            "salary": "от 80 000 ₽"
+        }
+    ]
+}

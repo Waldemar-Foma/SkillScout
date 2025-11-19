@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать вакансию - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <nav class="nav">
+                            <ul class="nav-menu">
+                                <li><a href="{{ url_for(current_user.role + '.dashboard') }}">Дашборд</a></li>
+                            </ul>
+                        </nav>                    
+                        <a href="{{ url_for(current_user.role + '.profile') }}">
+                            <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" width="40" height="40" style="border-radius: 50%;">
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">Вход</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Регистрация</a>
+                    {% endif %}
+                </div>
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="create-vacancy">
+                <h1>Отредактировать вакансию</h1>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{ form.title.label(class="form-label") }} 
+                        {{ form.title(class="form-control", placeholder="Название вакансии") }}
+                        {% if form.title.errors %}
+                            <div class="form-error">{{ form.title.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.company.label(class="form-label") }} 
+                        {{ form.company(class="form-control", placeholder="Название компании") }}
+                        {% if form.company.errors %}
+                            <div class="form-error">{{ form.company.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.industry.label(class="form-label") }} 
+                        {{ form.industry(class="form-control") }}
+                        {% if form.industry.errors %}
+                            <div class="form-error">{{ form.industry.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                {{ form.location.label(class="form-label") }} 
+                                {{ form.location(class="form-control", placeholder="Москва / Удаленно") }}
+                                {% if form.location.errors %}
+                                    <div class="form-error">{{ form.location.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                {{ form.salary_range.label(class="form-label") }} 
+                                {{ form.salary_range(class="form-control", placeholder="100000-150000") }}
+                                {% if form.salary_range.errors %}
+                                    <div class="form-error">{{ form.salary_range.errors[0] }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.description.label(class="form-label") }} 
+                        {{ form.description(class="form-control", rows="4", placeholder="Описание вакансии") }}
+                        {% if form.description.errors %}
+                            <div class="form-error">{{ form.description.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Требования к кандидату</label>
+                        {{ form.requirements(class="form-control", rows="3", placeholder="Требования к кандидату") }}
+                        {% if form.requirements.errors %}
+                            <div class="form-error">{{ form.requirements.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Психологические требования (опционально)</label>
+                        
+                        <div class="psycho-metrics">
+                            {{ form.required_mbti.label(class="form-label") }} 
+                            {{ form.required_mbti(class="form-control") }}
+                            {% if form.required_mbti.errors %}
+                                <div class="form-error">{{ form.required_mbti.errors[0] }}</div>
+                            {% endif %}
+                            
+                            <div class="metric">
+                                <label class="form-label">Уровень стрессоустойчивости</label>
+                                {{ form.stress(class="form-control", type="range", min="1", max="10") }}
+                                {% if form.stress.errors %}
+                                    <div class="form-error">{{ form.stress.errors[0] }}</div>
+                                {% endif %}
+                                <div class="slider-labels" style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                    <span>Низкий</span>
+                                    <span>Высокий</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Сохранить вакансию</button>
+                        <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль компании - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 80px;
+            padding: 2rem;
+        }
+        
+        .profile-main {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .vacancies-sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .vacancies-title {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .vacancies-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        
+        .vacancy-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s;
+        }
+        
+        .vacancy-item:last-child {
+            border-bottom: none;
+        }
+        
+        .vacancy-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .vacancy-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .vacancy-company {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .vacancy-salary {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .vacancy-apply {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 12px;
+            background: #4e73df;
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        
+        .vacancy-apply:hover {
+            background: #3a56b5;
+        }
+        
+        @media (max-width: 992px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .vacancies-sidebar {
+                width: 100%;
+            }
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .profile-avatar {
+            margin-right: 30px;
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: all 0.3s;
+        }
+        
+        .avatar-placeholder {
+            font-size: 150px;
+            color: #ccc;
+            width: 150px;
+            height: 150px;
+            transition: all 0.3s;
+        }
+        
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .avatar-overlay i {
+            color: white;
+            font-size: 30px;
+        }
+        
+        .profile-avatar:hover .avatar-overlay {
+            opacity: 1;
+        }
+        
+        .profile-avatar:hover .avatar-img,
+        .profile-avatar:hover .avatar-placeholder {
+            filter: brightness(0.7);
+        }
+        
+        .avatar-upload-form {
+            display: none;
+        }
+        
+        .profile-info h1 {
+            margin: 0 0 5px 0;
+            font-size: 28px;
+        }
+        
+        .profile-email {
+            color: #666;
+            margin: 0 0 10px 0;
+        }
+        
+        .profile-role {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 14px;
+        }
+        
+        .company-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2154C3;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .settings-icon:hover {
+            color: #4e73df;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <nav class="nav">
+                            <ul class="nav-menu">
+                              <li><a href="{{ url_for('employer.dashboard') }}">Дашборд</a></li>
+                              <li><a href="{{ url_for('employer.profile') }}" class="active">Профиль</a></li>
+                            </ul>
+                        </nav>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-sm">Выйти</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">Вход</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Регистрация</a>
+                    {% endif %}
+                </div>
+
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content-wrapper">
+            <div class="profile-main">
+                <div class="profile-header">
+                    <a href="{{ url_for('employer.settings') }}" class="settings-icon" title="Настройки">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                    
+                    <div class="profile-avatar" onclick="document.getElementById('avatarInput').click()">
+                        {% if current_user.avatar %}
+                            <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" class="avatar-img" id="avatarPreview">
+                        {% else %}
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        {% endif %}
+                        <div class="avatar-overlay">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('employer.avatar_settings') }}" enctype="multipart/form-data" class="avatar-upload-form" id="avatarForm">
+                            {{ form.hidden_tag() }}
+                            {{ form.avatar(id="avatarInput", class="avatar-upload-input", onchange="document.getElementById('avatarForm').submit()") }}
+                        </form>
+                    </div>
+                    
+                    <div class="profile-info">
+                        <h1>{{ current_user.company_name or 'Название компании' }}</h1>
+                        <p class="profile-email">{{ current_user.email }}</p>
+                        <span class="profile-role">Работодатель</span>
+                    </div>
+                </div>
+
+                <!-- Статистика компании -->
+                <div class="company-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.active_vacancies }}</div>
+                        <div class="stat-label">Активных вакансий</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.total_responses }}</div>
+                        <div class="stat-label">Всего откликов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ stats.profile_completion }}%</div>
+                        <div class="stat-label">Заполненность профиля</div>
+                    </div>
+                </div>
+
+                <!-- Информация о компании -->
+                {% if profile %}
+                <div class="company-info-section">
+                    <h2>Информация о компании</h2>
+                    <div class="company-details">
+                        {% if profile.company_description %}
+                            <p><strong>Описание:</strong> {{ profile.company_description }}</p>
+                        {% endif %}
+                        {% if profile.industry %}
+                            <p><strong>Отрасль:</strong> {{ profile.industry }}</p>
+                        {% endif %}
+                        {% if profile.team_size %}
+                            <p><strong>Размер команды:</strong> {{ profile.team_size }}</p>
+                        {% endif %}
+                        {% if profile.website %}
+                            <p><strong>Вебсайт:</strong> <a href="{{ profile.website }}" target="_blank">{{ profile.website }}</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="vacancies-sidebar">
+                <h3 class="vacancies-title">Рекомендованные вакансии</h3>
+                {% if recommended_vacancies %}
+                    <ul class="vacancies-list">
+                        {% for vacancy in recommended_vacancies %}
+                        <li class="vacancy-item">
+                            <div class="vacancy-title">{{ vacancy.title }}</div>
+                            <div class="vacancy-company">{{ vacancy.company }}</div>
+                            <div class="vacancy-salary">{{ vacancy.salary_range }}</div>
+                            <a href="{{ url_for('employer.all_vacancies') }}" class="vacancy-apply">Подробнее</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">Нет рекомендованных вакансий</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-header">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+                <span class="footer-logo-text">SkillScout</span>
+            </div>
+
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h5 class="footer-title">МЕНЮ</h5>
+                    <ul class="footer-menu">
+                        <li>
+                            <a href="{{ url_for('main.index') }}" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                    <div class="social-circles">
+                        <a href="https://t.me/axel_Invincible" class="social-circle">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="https://vk.com/axl_invincible" class="social-circle">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="#" class="social-circle">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                    <h4 class="support-email">
+                        <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                    </h4>
+                    <div id="copyOverlay" class="overlay">
+                        <div class="overlay-content">
+                            <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-left">
+                    <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+                </div>
+                <div class="footer-bottom-center">
+                    <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+                </div>
+                <div class="footer-bottom-right">
+                    <p class="copyright">2025 © SkillScout</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var preview = document.getElementById('avatarPreview');
+                    if (!preview) {
+                        var placeholder = document.querySelector('.avatar-placeholder');
+                        placeholder.innerHTML = '<img id="avatarPreview" class="avatar-img" src="' + e.target.result + '">';
+                    } else {
+                        preview.src = e.target.result;
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        // Автоматическая отправка формы при выборе файла
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarInput = document.getElementById('avatarInput');
+            if (avatarInput) {
+                avatarInput.addEventListener('change', function() {
+                    document.getElementById('avatarForm').submit();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

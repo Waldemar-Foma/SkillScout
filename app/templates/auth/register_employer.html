@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 12) return 'Доброе утро';
+            if (hour >= 12 && hour < 18) return 'Добрый день';
+            if (hour >= 18 && hour < 23) return 'Добрый вечер';
+            return 'Доброй ночи';
+        }
+        
+        function displayGreeting() {
+            const greeting = getGreeting();
+            document.getElementById('greeting').textContent = greeting;
+        }
+        
+        window.onload = displayGreeting;
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="{{ url_for('main.index') }}">Вернуться на главную</a></li>
+                    </ul>
+                </nav>
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+<div class="auth-container">
+    <div class="auth-card">
+
+        <!-- Flash-сообщения -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.company_name.label }}
+                {{ form.company_name(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.field.label }}
+                {{ form.field(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.password2.label }}
+                {{ form.password2(class="form-control") }}
+            </div>
+
+            <input type="hidden" name="role" value="employer">
+
+            {{ form.submit(class="btn btn-primary w-100 mt-3") }}
+        </form>
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+            <span class="footer-logo-text">SkillScout</span>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h5 class="footer-title">МЕНЮ</h5>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                <div class="social-circles">
+                    <a href="https://t.me/axel_Invincible" class="social-circle">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/axl_invincible" class="social-circle">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    <a href="#" class="social-circle">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                <h4 class="support-email">
+                    <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                </h4>
+                <div id="copyOverlay" class="overlay">
+                    <div class="overlay-content">
+                        <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-left">
+                <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+            </div>
+            <div class="footer-bottom-center">
+                <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+            </div>
+            <div class="footer-bottom-right">
+                <p class="copyright">2025 © SkillScout</p>
+            </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

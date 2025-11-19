@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/other.css') }}">
+    <title>Политика конфиденциальности SkillScout</title>
+</head>
+<body>
+    <header class="header">
+        <a href="{{ url_for('main.index') }}" class="logo-link">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Вернуться на главную">
+            SkillScout
+        </a>
+
+        <div class="language-switcher">
+            <button class="language-btn active">
+                <img src="/static/images/ru.svg" alt="RU"> Русский
+            </button>
+            <button class="language-btn">
+                <img src="/static/images/en.svg" alt="EN"> English
+            </button>
+        </div>
+    </header>
+
+        <div class="content-container">
+            <div id="ru-content">
+                <h1>Политика конфиденциальности SkillScout</h1>
+            <span class="last-update">Дата последнего обновления: 10.05.2025</span>
+
+            <h2>1. Общие положения</h2>
+            <p>1.1. SkillScout (далее — «Платформа») обязуется защищать конфиденциальность пользователей (кандидатов, работодателей и администраторов).</p>
+            <p>1.2. Политика описывает порядок сбора, обработки и хранения персональных данных в соответствии с законодательством РФ (ФЗ-152 «О персональных данных»).</p>
+
+            <h2>2. Какие данные мы собираем</h2>
+            <h3>2.1. Для кандидатов:</h3>
+            <ul>
+                <li>Имя, контакты (email, телефон), профессиональный опыт, навыки.</li>
+                <li>Видеозаписи (видеовизитки), аудиоанализ речи, поведенческие метрики.</li>
+                <li>Данные устройств (IP, браузер, геолокация для аналитики).</li>
+            </ul>
+
+            <h3>2.2. Для работодателей:</h3>
+            <ul>
+                <li>Данные компании, контакты ответственных лиц.</li>
+                <li>Информация о вакансиях и критериях отбора.</li>
+            </ul>
+
+            <div class="note-block">
+                <h3>2.3. Автоматически собираемые данные:</h3>
+                <p>Cookies, история действий на Платформе, данные совместимости (AI-анализ).</p>
+            </div>
+
+            <h2>3. Цели обработки данных</h2>
+            <ul>
+                <li>Обеспечение функционала Платформы (подбор вакансий/кандидатов).</li>
+                <li>AI-анализ для оценки профессиональных качеств кандидатов.</li>
+                <li>Оценка соответствия вакансий и профилей.</li>
+                <li>Улучшение сервиса через аналитику.</li>
+                <li>Коммуникация с пользователями (уведомления, поддержка).</li>
+            </ul>
+
+            <div class="contact-block">
+                <h2>8. Контакты и разрешение споров</h2>
+                <p><strong>По вопросам защиты данных обращайтесь:</strong></p>
+                <p>Email: AXL-TECH@BK.RU</a></p>
+                <p>Споры решаются в соответствии с законодательством РФ.</p>
+            </div>
+        </div>
+
+        <div id="en-content" class="hidden">
+            <h1>SkillScout Privacy Policy</h1>
+            <span class="last-update">Last updated: May 10, 2025</span>
+
+            <h2>1. General Provisions</h2>
+            <p>1.1. SkillScout (hereinafter referred to as the "Platform") is committed to protecting the privacy of users (candidates, employers, and administrators).</p>
+            <p>1.2. This Policy describes the procedure for collecting, processing, and storing personal data in accordance with the legislation of the Russian Federation (Federal Law No. 152-FZ "On Personal Data").</p>
+
+            <h2>2. Data We Collect</h2>
+            <h3>2.1. For Candidates:</h3>
+            <ul>
+                <li>Name, contact details (email, phone number), professional experience, skills.</li>
+                <li>Video recordings (video profiles), speech audio analysis, behavioral metrics.</li>
+                <li>Device data (IP address, browser, geolocation for analytics).</li>
+            </ul>
+
+            <h3>2.2. For Employers:</h3>
+            <ul>
+                <li>Company details, contact information of responsible persons.</li>
+                <li>Information about vacancies and selection criteria.</li>
+            </ul>
+
+            <div class="note-block">
+                <h3>2.3. Automatically Collected:</h3>
+                <p>Cookies, activity logs on the Platform, compatibility data (AI analysis).</p>
+            </div>
+
+            <h2>3. Purposes of Data Processing</h2>
+            <ul>
+                <li>Providing Platform functionality (job/candidate matching).</li>
+                <li>AI analysis for assessing candidates' professional qualities.</li>
+                <li>Evaluating the compatibility of vacancies and profiles.</li>
+                <li>Improving the service through analytics.</li>
+                <li>Communicating with users (notifications, support).</li>
+            </ul>
+
+            <div class="contact-block">
+                <h2>8. Contacts and Dispute Resolution</h2>
+                <p><strong>For data protection inquiries, please contact:</strong></p>
+                <p>Email: AXL-TECH@BK.RU</a></p>
+                <p>Disputes are resolved in accordance with the laws of the Russian Federation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+</body>
+</html>

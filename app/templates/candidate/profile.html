@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль кандидата - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .avatar-section {
+            text-align: center;
+        }
+
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-blue);
+        }
+
+        .avatar-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--gray-4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--gray-2);
+            border: 4px solid var(--primary-blue);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-email {
+            color: var(--gray-2);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .completion-badge {
+            display: inline-block;
+            background: var(--accent-green);
+            color: var(--dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray-2);
+            font-size: 0.9rem;
+        }
+
+        .profile-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary-blue);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--gray-2);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            color: var(--dark);
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--gray-2);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-outline btn-sm">Дашборд</a>
+                        <a href="{{ url_for('candidate.profile') }}">
+                            <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" width="40" height="40" style="border-radius: 50%;">
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <!-- Заголовок профиля -->
+        <div class="profile-header">
+            <div class="avatar-section">
+                {% if current_user.avatar %}
+                    <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" 
+                         alt="Аватар" class="avatar-img">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+                <a href="{{ url_for('candidate.settings') }}" class="btn btn-outline btn-sm" style="margin-top: 1rem;">
+                    <i class="fas fa-edit"></i> Изменить фото
+                </a>
+            </div>
+
+            <div class="profile-info">
+                <h1 class="profile-name">{{ current_user.fullname or 'Не указано' }}</h1>
+                <p class="profile-email">{{ current_user.email }}</p>
+                
+                <div class="completion-badge">
+                    Профиль заполнен на {{ profile_completion }}%
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{{ url_for('candidate.settings') }}" class="btn btn-primary">
+                        <i class="fas fa-cog"></i> Редактировать профиль
+                    </a>
+                    <a href="{{ url_for('main.questionnaire') }}" class="btn btn-outline">
+                        <i class="fas fa-clipboard-list"></i> Заполнить анкету
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ recommended_vacancies|length }}</div>
+                <div class="stat-label">Рекомендованных вакансий</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ profile_completion }}%</div>
+                <div class="stat-label">Заполненность профиля</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% if profile and profile.experience %}{{ profile.experience }}{% else %}0{% endif %}
+                </div>
+                <div class="stat-label">Лет опыта</div>
+            </div>
+        </div>
+
+        <div class="profile-sections">
+            <!-- Основная информация -->
+            <div class="main-section">
+                <div class="profile-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-info-circle"></i> Основная информация
+                    </h2>
+                    
+                    {% if profile %}
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Сфера деятельности</div>
+                            <div class="info-value">{{ profile.field or 'Не указано' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Профессия</div>
+                            <div class="info-value">{{ profile.profession or 'Не указано' }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Опыт работы</div>
+                            <div class="info-value">
+                                {% if profile.experience is not none %}
+                                    {{ profile.experience }} лет
+                                {% else %}
+                                    Не указано
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Психологический тип</div>
+                            <div class="info-value">{{ profile.mbti_type or 'Не указано' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item" style="margin-top: 1.5rem;">
+                        <div class="info-label">Ключевые навыки</div>
+                        <div class="info-value">
+                            {% if profile.skills %}
+                                {{ profile.skills }}
+                            {% else %}
+                                <span style="color: var(--gray-2);">Навыки не указаны</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-circle"></i>
+                        <h3>Профиль не заполнен</h3>
+                        <p>Заполните информацию о себе для получения лучших рекомендаций</p>
+                        <a href="{{ url_for('candidate.settings') }}" class="btn btn-primary">
+                            Заполнить профиль
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Видеовизитка -->
+                <div class="profile-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-video"></i> Видеовизитка
+                    </h2>
+                    
+                    {% if profile and profile.video_resume %}
+                    <div class="video-section">
+                        <video controls width="100%" style="border-radius: 8px;">
+                            <source src="{{ url_for('static', filename='uploads/videos/' + profile.video_resume) }}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-video-slash"></i>
+                        <h3>Видеовизитка не загружена</h3>
+                        <p>Добавьте видеовизитку чтобы повысить свои шансы</p>
+                        <a href="{{ url_for('candidate.settings') }}" class="btn btn-primary">
+                            Загрузить видео
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Боковая панель -->
+            <div class="sidebar-section">
+                <!-- Рекомендованные вакансии -->
+                <div class="profile-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-star"></i> Рекомендованные
+                    </h2>
+                    
+                    {% if recommended_vacancies %}
+                    <div class="vacancies-list">
+                        {% for vacancy in recommended_vacancies[:3] %}
+                        <div class="vacancy-item" style="padding: 1rem 0; border-bottom: 1px solid var(--gray-4);">
+                            <div class="vacancy-title" style="font-weight: 600; margin-bottom: 0.5rem;">
+                                {{ vacancy.title }}
+                            </div>
+                            <div class="vacancy-company" style="color: var(--primary-blue); font-size: 0.9rem;">
+                                {{ vacancy.company }}
+                            </div>
+                            <div class="vacancy-salary" style="color: var(--accent-green); font-weight: 600; margin: 0.5rem 0;">
+                                {{ vacancy.salary_range }}
+                            </div>
+                            <a href="{{ url_for('candidate.vacancy_detail', vacancy_id=vacancy.id) }}" 
+                               class="btn btn-outline btn-sm" style="width: 100%;">
+                                Подробнее
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-primary btn-sm">
+                            Все рекомендации
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Заполните профиль для получения рекомендаций</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Быстрые действия -->
+                <div class="profile-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-bolt"></i> Быстрые действия
+                    </h2>
+                    <div class="actions-list">
+                        <a href="{{ url_for('candidate.settings') }}" class="btn btn-outline btn-sm" style="width: 100%; margin-bottom: 0.5rem;">
+                            <i class="fas fa-edit"></i> Редактировать профиль
+                        </a>
+                        <a href="{{ url_for('candidate.candidate_vacancies') }}" class="btn btn-outline btn-sm" style="width: 100%; margin-bottom: 0.5rem;">
+                            <i class="fas fa-search"></i> Найти вакансии
+                        </a>
+                        <a href="{{ url_for('main.questionnaire') }}" class="btn btn-outline btn-sm" style="width: 100%;">
+                            <i class="fas fa-clipboard-list"></i> Пройти анкету
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="container">
+        <div class="footer-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+            <span class="footer-logo-text">SkillScout</span>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h5 class="footer-title">МЕНЮ</h5>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                <div class="social-circles">
+                    <a href="https://t.me/axel_Invincible" class="social-circle">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/axl_invincible" class="social-circle">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    <a href="#" class="social-circle">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                <h4 class="support-email">
+                    <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                </h4>
+                <div id="copyOverlay" class="overlay">
+                    <div class="overlay-content">
+                        <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-left">
+                <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+            </div>
+            <div class="footer-bottom-center">
+                <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+            </div>
+            <div class="footer-bottom-right">
+                <p class="copyright">2025 © SkillScout</p>
+            </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

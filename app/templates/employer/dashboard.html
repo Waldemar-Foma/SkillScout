@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд работодателя - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== ОСНОВНАЯ СТРУКТУРА ===== */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            margin-top: 80px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        /* ===== БОКОВОЕ МЕНЮ ===== */
+        .sidebar-menu {
+            width: 280px;
+            background: #ffffff;
+            padding: 2rem 0;
+            position: fixed;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+            border-right: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            transform: translateX(0);
+        }
+
+        .sidebar-menu.collapsed {
+            transform: translateX(-100%);
+            width: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 0;
+            right: -12px;
+            width: 24px;
+            height: 24px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            color: #64748b;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-toggle-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .sidebar-company {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+        }
+
+        .sidebar-company-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .sidebar-company-info h3 {
+            font-size: 16px;
+            margin: 0;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .sidebar-company-info p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 2px 0 0;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+
+        .nav-item:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #f1f5f9;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .nav-item.active i {
+            color: #3b82f6;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin: 1rem 1.5rem;
+        }
+
+        .nav-item.logout {
+            color: #ef4444;
+        }
+
+        .nav-item.logout:hover {
+            background: #fef2f2;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        .dashboard-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 3rem;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-content.expanded {
+            margin-left: 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .dashboard-title p {
+            color: #64748b;
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 14px;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f1f5f9, #e2e8f0);
+        }
+
+        .stat-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #64748b;
+            background: #f8fafc;
+        }
+
+        /* ===== УВЕДОМЛЕНИЯ ===== */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #fcd34d;
+            color: #92400e;
+        }
+
+        .alert i {
+            font-size: 24px;
+            margin-top: 2px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .alert-content p {
+            margin: 0 0 1rem 0;
+            opacity: 0.9;
+        }
+
+        /* ===== ВКЛАДКИ ВАКАНСИЙ ===== */
+        .vacancies-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 2rem 1rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .section-title i {
+            color: #64748b;
+            font-size: 1.8rem;
+        }
+
+        .vacancies-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 2rem;
+            background: #f8fafc;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: #1e293b;
+            border-bottom-color: #3b82f6;
+        }
+
+        .tab-btn .badge {
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .tab-btn.active .badge {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== СЕТКА ВАКАНСИЙ ===== */
+        .vacancies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .vacancy-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .vacancy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            border-color: #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .vacancy-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .salary-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .vacancy-company {
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .vacancy-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            width: 16px;
+            color: #94a3b8;
+        }
+
+        .vacancy-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .vacancy-actions .btn {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* ===== СОСТОЯНИЕ ПУСТО ===== */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-image {
+            max-width: 200px;
+            margin-bottom: 1.5rem;
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        /* ===== РЕКОМЕНДОВАННЫЕ ВАКАНСИИ ===== */
+        .recommended-section {
+            margin-top: 3rem;
+        }
+
+        .recommended-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 1200px) {
+            .sidebar-menu {
+                transform: translateX(-100%);
+            }
+
+            .sidebar-menu.active {
+                transform: translateX(0);
+            }
+
+            .dashboard-content {
+                margin-left: 0;
+                padding: 1rem 1.5rem;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .vacancies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.5rem 1.5rem 1rem;
+            }
+
+            .vacancies-tabs {
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .tab-btn {
+                border-bottom: 1px solid #e2e8f0;
+                border-left: 3px solid transparent;
+                text-align: left;
+            }
+
+            .tab-btn.active {
+                border-left-color: #3b82f6;
+                border-bottom-color: #e2e8f0;
+            }
+
+            .vacancy-actions {
+                flex-direction: column;
+            }
+
+            .vacancies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .dashboard-title h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .vacancy-card {
+                padding: 1rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .salary-badge {
+                align-self: flex-start;
+            }
+        }
+
+        /* ===== АНИМАЦИИ ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ===== */
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            color: #1e293b;
+        }
+
+        .header-stats .stat-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Overlay для мобильного меню */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 1200px) {
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <button class="mobile-menu-toggle">
+                            <i class="fas fa-bars"></i> Меню
+                        </button>
+                        <a href="{{ url_for('employer.profile') }}" class="user-avatar">
+                            <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" width="40" height="40" style="border-radius: 50%;">
+                            <span class="desktop-only">{{ current_user.company_name or 'Компания' }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Overlay для мобильного меню -->
+    <div class="sidebar-overlay"></div>
+
+    <div class="dashboard-container">
+        <!-- Боковое меню -->
+        <div class="sidebar-menu">
+            <div class="sidebar-header">
+                <div class="sidebar-company">
+                    <div class="sidebar-company-avatar">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="sidebar-company-info">
+                        <h3>{{ current_user.company_name or 'Компания' }}</h3>
+                        <p>Работодатель</p>
+                    </div>
+                </div>
+                <button class="sidebar-toggle-btn" title="Скрыть меню">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('employer.dashboard') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="{{ url_for('employer.profile') }}" class="nav-item">
+                    <i class="fas fa-building"></i> Профиль компании
+                </a>
+                <a href="{{ url_for('employer.settings') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Настройки
+                </a>
+                <a href="{{ url_for('employer.new_vacancy') }}" class="nav-item">
+                    <i class="fas fa-plus-circle"></i> Создать вакансию
+                </a>
+                <a href="{{ url_for('employer.all_vacancies') }}" class="nav-item">
+                    <i class="fas fa-search"></i> Поиск вакансий
+                </a>
+                <a href="{{ url_for('employer.vacancy_responses') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Отклики
+                </a>
+                <a href="{{ url_for('employer.search_candidates') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Кандидаты
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a href="{{ url_for('auth.logout') }}" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i> Выход
+                </a>
+            </nav>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="dashboard-content">
+            <!-- Заголовок -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h1>Добро пожаловать!</h1>
+                    <p>Управляйте вакансиями и находите лучших кандидатов</p>
+                </div>
+                <div class="header-actions">
+                    <div class="header-stats">
+                        <span class="stat-badge">{{ stats.active_count }} активных вакансий</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Уведомление о заполнении профиля -->
+            {% if stats.profile_completion < 80 %}
+            <div class="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="alert-content">
+                    <h4>Заполните профиль компании</h4>
+                    <p>Заполненность профиля: {{ stats.profile_completion }}% - это поможет кандидатам лучше узнать вашу компанию и увеличит количество откликов.</p>
+                    <a href="{{ url_for('employer.settings') }}" class="btn btn-primary btn-sm">
+                        Заполнить профиль
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Статистика -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-info">
+                            <div class="stat-number">{{ stats.active_count }}</div>
+                            <div class="stat-label">Активных вакансий</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-info">
+                            <div class="stat-number">{{ stats.archived_count }}</div>
+                            <div class="stat-label">В архиве</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-info">
+                            <div class="stat-number">{{ stats.total_views }}</div>
+                            <div class="stat-label">Просмотров вакансий</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-info">
+                            <div class="stat-number">{{ stats.profile_completion }}%</div>
+                            <div class="stat-label">Заполненность профиля</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Мои вакансии -->
+            <section class="vacancies-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-briefcase"></i> Мои вакансии
+                    </h2>
+                    <a href="{{ url_for('employer.new_vacancy') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Создать вакансию
+                    </a>
+                </div>
+
+                <div class="vacancies-tabs">
+                    <button class="tab-btn active" data-tab="active">
+                        Активные
+                        <span class="badge">{{ active_vacancies|length }}</span>
+                    </button>
+                    <button class="tab-btn" data-tab="archived">
+                        Архив
+                        <span class="badge">{{ archived_vacancies|length }}</span>
+                    </button>
+                </div>
+
+                <!-- Активные вакансии -->
+                <div class="tab-content active" id="active-tab">
+                    {% if active_vacancies %}
+                    <div class="vacancies-grid">
+                        {% for vacancy in active_vacancies %}
+                        <div class="vacancy-card">
+                            <div class="card-header">
+                                <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                                <span class="salary-badge">{{ vacancy.salary_range }}</span>
+                            </div>
+                            <p class="vacancy-company">{{ vacancy.company }}</p>
+                            <div class="vacancy-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ vacancy.location }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-industry"></i>
+                                    <span>{{ vacancy.industry }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>{{ vacancy.views or 0 }} просмотров</span>
+                                </div>
+                            </div>
+                            <div class="vacancy-actions">
+                                <a href="{{ url_for('employer.edit_vacancy', vacancy_id=vacancy.id) }}" 
+                                   class="btn btn-outline btn-sm">
+                                    <i class="fas fa-edit"></i> Редактировать
+                                </a>
+                                <form action="{{ url_for('employer.archive_vacancy', vacancy_id=vacancy.id) }}" 
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-archive"></i> В архив
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <img src="{{ url_for('static', filename='images/no-vacancies.svg') }}" 
+                             alt="No vacancies" class="empty-image">
+                        <h3>У вас пока нет активных вакансий</h3>
+                        <p>Создайте первую вакансию чтобы начать поиск кандидатов</p>
+                        <a href="{{ url_for('employer.new_vacancy') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Создать вакансию
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Архивные вакансии -->
+                <div class="tab-content" id="archived-tab">
+                    {% if archived_vacancies %}
+                    <div class="vacancies-grid">
+                        {% for vacancy in archived_vacancies %}
+                        <div class="vacancy-card" style="opacity: 0.8;">
+                            <div class="card-header">
+                                <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                                <span class="salary-badge">{{ vacancy.salary_range }}</span>
+                            </div>
+                            <p class="vacancy-company">{{ vacancy.company }}</p>
+                            <div class="vacancy-actions">
+                                <form action="{{ url_for('employer.restore_vacancy', vacancy_id=vacancy.id) }}" 
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="fas fa-redo"></i> Восстановить
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('employer.delete_vacancy', vacancy_id=vacancy.id) }}" 
+                                      method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Удалить вакансию?')">
+                                        <i class="fas fa-trash"></i> Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <img src="{{ url_for('static', filename='images/empty-archive.svg') }}" 
+                             alt="Empty archive" class="empty-image">
+                        <h3>Архив пуст</h3>
+                        <p>Здесь будут отображаться ваши архивные вакансии</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Рекомендованные вакансии -->
+            {% if recommended_vacancies %}
+            <section class="vacancies-section recommended-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-lightbulb"></i> Рекомендованные вакансии
+                    </h2>
+                    <a href="{{ url_for('employer.all_vacancies') }}" class="btn btn-outline">
+                        Показать все
+                    </a>
+                </div>
+                <div class="vacancies-grid">
+                    {% for vacancy in recommended_vacancies %}
+                    <div class="vacancy-card">
+                        <div class="card-header">
+                            <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                            <span class="salary-badge">{{ vacancy.salary_range }}</span>
+                        </div>
+                        <p class="vacancy-company">{{ vacancy.company }}</p>
+                        <div class="vacancy-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ vacancy.location }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-industry"></i>
+                                <span>{{ vacancy.industry }}</span>
+                            </div>
+                        </div>
+                        <div class="vacancy-actions">
+                            <a href="#" class="btn btn-primary btn-sm">
+                                Подробнее
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-header">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+                <span class="footer-logo-text">SkillScout</span>
+            </div>
+
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h5 class="footer-title">МЕНЮ</h5>
+                    <ul class="footer-menu">
+                        <li>
+                            <a href="{{ url_for('main.index') }}" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="footer-link">
+                                <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                    <div class="social-circles">
+                        <a href="https://t.me/axel_Invincible" class="social-circle">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="https://vk.com/axl_invincible" class="social-circle">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="#" class="social-circle">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                    <h4 class="support-email">
+                        <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                    </h4>
+                    <div id="copyOverlay" class="overlay">
+                        <div class="overlay-content">
+                            <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-left">
+                    <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+                </div>
+                <div class="footer-bottom-center">
+                    <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+                </div>
+                <div class="footer-bottom-right">
+                    <p class="copyright">2025 © SkillScout</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            const dashboardContent = document.querySelector('.dashboard-content');
+            const sidebarToggleBtn = document.querySelector('.sidebar-toggle-btn');
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+            // Функция переключения бокового меню
+            function toggleSidebar() {
+                sidebarMenu.classList.toggle('collapsed');
+                dashboardContent.classList.toggle('expanded');
+                
+                // Обновляем иконку кнопки
+                const icon = sidebarToggleBtn.querySelector('i');
+                if (sidebarMenu.classList.contains('collapsed')) {
+                    icon.className = 'fas fa-chevron-right';
+                    sidebarToggleBtn.title = 'Показать меню';
+                } else {
+                    icon.className = 'fas fa-chevron-left';
+                    sidebarToggleBtn.title = 'Скрыть меню';
+                }
+            }
+
+            // Функция открытия/закрытия мобильного меню
+            function toggleMobileMenu() {
+                sidebarMenu.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            }
+
+            // Обработчики событий
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            }
+
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleMobileMenu);
+            }
+
+            // Закрытие мобильного меню при клике на ссылку
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 1200) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+
+            // Управление вкладками
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Обновляем активные кнопки
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Показываем соответствующий контент
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // Анимация появления элементов
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Наблюдаем за карточками статистики и вакансий
+            document.querySelectorAll('.stat-card, .vacancy-card').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Скрываем название компании на мобильных устройствах
+            function handleResize() {
+                const desktopOnly = document.querySelector('.desktop-only');
+                if (window.innerWidth <= 768 && desktopOnly) {
+                    desktopOnly.style.display = 'none';
+                } else if (desktopOnly) {
+                    desktopOnly.style.display = 'inline';
+                }
+            }
+
+            // Вызываем при загрузке и изменении размера
+            handleResize();
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

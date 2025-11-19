@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать вакансию - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .salary-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .market-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .salary-hint {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li><a href="#home">Главная</a></li>
+                        <li><a href="#features">Возможности</a></li>
+                        <li><a href="#how-it-works">Как это работает</a></li>
+                    </ul>
+                </nav>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <nav class="nav">
+                            <ul class="nav-menu">
+                              <li><a href="{{ url_for(current_user.role + '.dashboard') }}">dashboard</a></li>
+                            </ul>
+                        </nav>
+                        <a href="{{ url_for(current_user.role + '.profile') }}"><img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" width="40" height="40"style="border-radius: 50%;"></a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">Вход</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Регистрация</a>
+                    {% endif %}
+                </div>
+
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="create-vacancy">
+                <h1>Создать новую вакансию</h1>
+                
+                <div class="market-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Рыночные данные:</strong> 
+                    {% for category, data in market_data.items() %}
+                    {{ category }}: {{ data.min }}-{{ data.max }}₽ (среднее: {{ data.avg }}₽){% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="Например: Frontend разработчик") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.company.label(class="form-label") }}
+                        {{ form.company(class="form-control", placeholder="Название вашей компании") }}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                {{ form.industry.label(class="form-label") }}
+                                {{ form.industry(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                {{ form.location.label(class="form-label") }}
+                                {{ form.location(class="form-control", placeholder="Москва / Удаленно / Гибрид") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.salary_range.label(class="form-label") }}
+                        <div style="position: relative;">
+                            {{ form.salary_range(class="form-control", placeholder="100000-150000", 
+                                               oninput="checkSalary(this.value)") }}
+                            <span class="salary-hint" onclick="showMarketInfo()">
+                                <i class="fas fa-chart-line"></i>
+                            </span>
+                        </div>
+                        <small class="form-text">Укажите вилку зарплаты в рублях (например: 100000-150000)</small>
+                    </div>
+
+                    <div id="salary-warning" class="salary-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="warning-text"></span>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="4", 
+                                          placeholder="Опишите обязанности, задачи и особенности работы...") }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.requirements.label(class="form-label") }}
+                        {{ form.requirements(class="form-control", rows="3", 
+                                           placeholder="Ключевые навыки, технологии, опыт работы...") }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Психологические требования (опционально)</label>
+                        <div class="psycho-metrics">
+                            <div class="form-group">
+                                {{ form.required_mbti.label(class="form-label") }}
+                                {{ form.required_mbti(class="form-control") }}
+                            </div>
+                            
+                            <div class="metric">
+                                <label class="form-label">Уровень стрессоустойчивости</label>
+                                {{ form.stress(class="form-control", type="range", min="1", max="10", value="5") }}
+                                <div class="slider-labels">
+                                    <span>Низкий</span>
+                                    <span>Высокий</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Опубликовать вакансию</button>
+                        <a href="{{ url_for('employer.dashboard') }}" class="btn btn-outline">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const marketData = {
+            {% for category, data in market_data.items() %}
+            '{{ category }}': {{ data|tojson }},
+            {% endfor %}
+        };
+
+        function checkSalary(salaryRange) {
+            const warningDiv = document.getElementById('salary-warning');
+            const warningText = document.getElementById('warning-text');
+            const title = document.getElementById('title').value.toLowerCase();
+            
+            if (!salaryRange) return;
+            
+            try {
+                let minSalary;
+                if (salaryRange.includes('-')) {
+                    minSalary = parseInt(salaryRange.split('-')[0].trim());
+                } else {
+                    minSalary = parseInt(salaryRange);
+                }
+                
+                // Определяем категорию по названию
+                let category = determineCategory(title);
+                
+                if (category && marketData[category]) {
+                    const marketMin = marketData[category].min;
+                    
+                    if (minSalary < marketMin) {
+                        warningText.textContent = 
+                            `Внимание: предлагаемая зарплата ниже рыночной для ${category}. ` +
+                            `Рекомендуемый минимум: ${marketMin}₽. ` +
+                            `Это может снизить количество откликов.`;
+                        warningDiv.style.display = 'block';
+                    } else {
+                        warningDiv.style.display = 'none';
+                    }
+                }
+            } catch (e) {
+                console.error('Error checking salary:', e);
+            }
+        }
+
+        function determineCategory(title) {
+            const titleLower = title.toLowerCase();
+            
+            if (titleLower.includes('разработчик') || titleLower.includes('developer') || 
+                titleLower.includes('программист') || titleLower.includes('инженер')) {
+                return 'developer';
+            } else if (titleLower.includes('дизайнер') || titleLower.includes('designer')) {
+                return 'designer';
+            } else if (titleLower.includes('менеджер') || titleLower.includes('manager') || 
+                       titleLower.includes('руководитель')) {
+                return 'manager';
+            } else if (titleLower.includes('аналитик') || titleLower.includes('analyst')) {
+                return 'analyst';
+            } else if (titleLower.includes('маркетолог') || titleLower.includes('marketing')) {
+                return 'marketing';
+            }
+            
+            return null;
+        }
+
+        function showMarketInfo() {
+            alert('Рыночные данные по зарплатам:\n\n' +
+                  'Разработчики: 80,000 - 300,000₽ (среднее: 120,000₽)\n' +
+                  'Дизайнеры: 60,000 - 180,000₽ (среднее: 90,000₽)\n' +
+                  'Менеджеры: 70,000 - 250,000₽ (среднее: 110,000₽)\n' +
+                  'Аналитики: 65,000 - 200,000₽ (среднее: 95,000₽)\n' +
+                  'Маркетологи: 55,000 - 160,000₽ (среднее: 85,000₽)');
+        }
+
+        // Проверяем зарплату при загрузке, если есть значение
+        document.addEventListener('DOMContentLoaded', function() {
+            const salaryField = document.getElementById('salary_range');
+            if (salaryField.value) {
+                checkSalary(salaryField.value);
+            }
+        });
+    </script>
+</body>
+</html>

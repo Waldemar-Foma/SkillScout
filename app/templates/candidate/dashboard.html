@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд кандидата - SkillScout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 120px);
+            margin-top: 80px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-3);
+        }
+
+        .sidebar-menu {
+            width: 280px;
+            background: var(--white);
+            padding: 2rem 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            text-decoration: none;
+            color: var(--dark);
+            border-radius: var(--btn-radius);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2rem 3rem;
+        }
+
+        /* Фильтры */
+        .filters-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--card-radius);
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .filter-form {
+            margin-top: 1rem;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        /* Сетка вакансий */
+        .vacancies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .vacancy-card {
+            background: var(--white);
+            border-radius: var(--card-radius);
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--gray-3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .vacancy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .vacancy-card.recommended {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .vacancy-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .salary-badge {
+            background: var(--accent-green);
+            color: var(--dark);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .vacancy-company {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .vacancy-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-2);
+            font-size: 0.9rem;
+        }
+
+        .meta-item i {
+            width: 16px;
+            color: var(--primary-blue);
+        }
+
+        .vacancy-description {
+            color: var(--dark-2);
+            margin: 1rem 0;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .vacancy-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Алерты */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-radius: var(--card-radius);
+            margin-bottom: 2rem;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert i {
+            font-size: 1.2rem;
+            margin-top: 0.2rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .alert-content p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* Заголовки секций */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary-blue);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0 1rem 0;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .sidebar-menu {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar-menu.active {
+                transform: translateX(0);
+            }
+
+            .dashboard-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .vacancies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                min-width: auto;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ url_for('main.index') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout">
+                    <span>SkillScout</span>
+                </a>
+
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <button class="btn btn-outline btn-sm sidebar-toggle">
+                            <i class="fas fa-bars"></i> Меню
+                        </button>
+                        <a href="{{ url_for('candidate.profile') }}">
+                            <img src="{{ url_for('main.get_avatar', user_id=current_user.id) }}" alt="Аватар" width="40" height="40" style="border-radius: 50%;">
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">Вход</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Регистрация</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Боковое меню -->
+        <div class="sidebar-menu">
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('candidate.dashboard') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="{{ url_for('candidate.profile') }}" class="nav-item">
+                    <i class="fas fa-user"></i> Профиль
+                </a>
+                <a href="{{ url_for('candidate.settings') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Настройки
+                </a>
+                <a href="{{ url_for('candidate.candidate_vacancies') }}" class="nav-item">
+                    <i class="fas fa-briefcase"></i> Все вакансии
+                </a>
+                <a href="{{ url_for('main.questionnaire') }}" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i> Анкета
+                </a>
+                <div class="nav-divider"></div>
+                <a href="{{ url_for('auth.logout') }}" class="nav-item" style="color: var(--error);">
+                    <i class="fas fa-sign-out-alt"></i> Выход
+                </a>
+            </nav>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <h1>Дашборд кандидата</h1>
+                <div class="header-stats">
+                    <span class="stat-badge">{{ vacancies|length }} вакансий</span>
+                </div>
+            </div>
+
+            {% if profile_completion < 80 %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="alert-content">
+                    <h4>Заполните профиль для лучших рекомендаций</h4>
+                    <p>Заполненность профиля: {{ profile_completion }}% - это влияет на качество подбора вакансий</p>
+                    <a href="{{ url_for('candidate.settings') }}" class="btn btn-primary btn-sm" style="margin-top: 0.5rem;">
+                        Заполнить профиль
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Фильтры -->
+            <div class="filters-card">
+                <h3>Фильтры вакансий</h3>
+                <form method="GET" class="filter-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Поиск</label>
+                            <input type="text" name="search" value="{{ search }}" 
+                                   placeholder="Должность, компания, ключевые слова..." class="form-control">
+                        </div>
+                        <div class="filter-group">
+                            <label>Отрасль</label>
+                            <select name="industry" class="form-control">
+                                <option value="all">Все отрасли</option>
+                                <option value="IT" {% if industry == 'IT' %}selected{% endif %}>IT</option>
+                                <option value="marketing" {% if industry == 'marketing' %}selected{% endif %}>Маркетинг</option>
+                                <option value="management" {% if industry == 'management' %}selected{% endif %}>Менеджмент</option>
+                                <option value="design" {% if industry == 'design' %}selected{% endif %}>Дизайн</option>
+                                <option value="finance" {% if industry == 'finance' %}selected{% endif %}>Финансы</option>
+                                <option value="education" {% if industry == 'education' %}selected{% endif %}>Образование</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Город</label>
+                            <input type="text" name="location" value="{{ location }}" 
+                                   placeholder="Москва, Санкт-Петербург..." class="form-control">
+                        </div>
+                        <div class="filter-group">
+                            <label>Мин. зарплата</label>
+                            <input type="number" name="min_salary" value="{{ min_salary }}" 
+                                   placeholder="50000" class="form-control">
+                        </div>
+                    </div>
+                    <div class="filter-row" style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Применить фильтры
+                        </button>
+                        <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-outline">
+                            <i class="fas fa-times"></i> Сбросить
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Рекомендованные вакансии -->
+            {% if recommended_vacancies %}
+            <section class="vacancies-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i> Рекомендованные для вас
+                </h2>
+                <div class="vacancies-grid">
+                    {% for vacancy in recommended_vacancies %}
+                    <div class="vacancy-card recommended">
+                        <div class="card-header">
+                            <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                            <span class="salary-badge">{{ vacancy.salary_range }} ₽</span>
+                        </div>
+                        <p class="vacancy-company">{{ vacancy.company }}</p>
+                        <div class="vacancy-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ vacancy.location }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-industry"></i>
+                                <span>{{ vacancy.industry }}</span>
+                            </div>
+                            {% if vacancy.required_mbti %}
+                            <div class="meta-item">
+                                <i class="fas fa-brain"></i>
+                                <span>MBTI: {{ vacancy.required_mbti }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <p class="vacancy-description">
+                            {{ vacancy.description[:120] }}{% if vacancy.description|length > 120 %}...{% endif %}
+                        </p>
+                        <div class="vacancy-actions">
+                            <a href="{{ url_for('candidate.vacancy_detail', vacancy_id=vacancy.id) }}" 
+                               class="btn btn-primary btn-sm">
+                                Подробнее
+                            </a>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Все вакансии -->
+            <section class="vacancies-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-briefcase"></i> Все вакансии
+                    </h2>
+                    <a href="{{ url_for('candidate.candidate_vacancies') }}" class="btn btn-outline">
+                        Показать все вакансии
+                    </a>
+                </div>
+                
+                {% if vacancies %}
+                <div class="vacancies-grid">
+                    {% for vacancy in vacancies %}
+                    {% if vacancy not in recommended_vacancies %}
+                    <div class="vacancy-card">
+                        <div class="card-header">
+                            <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+                            <span class="salary-badge">{{ vacancy.salary_range }} ₽</span>
+                        </div>
+                        <p class="vacancy-company">{{ vacancy.company }}</p>
+                        <div class="vacancy-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ vacancy.location }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-industry"></i>
+                                <span>{{ vacancy.industry }}</span>
+                            </div>
+                        </div>
+                        <p class="vacancy-description">
+                            {{ vacancy.description[:100] }}{% if vacancy.description|length > 100 %}...{% endif %}
+                        </p>
+                        <div class="vacancy-actions">
+                            <a href="{{ url_for('candidate.vacancy_detail', vacancy_id=vacancy.id) }}" 
+                               class="btn btn-primary btn-sm">
+                                Подробнее
+                            </a>
+                            <button class="btn btn-outline btn-sm">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <img src="{{ url_for('static', filename='images/no-vacancies.svg') }}" 
+                         alt="No vacancies" class="empty-image">
+                    <h3>Вакансии не найдены</h3>
+                    <p>Попробуйте изменить параметры фильтрации или расширить критерии поиска</p>
+                    <a href="{{ url_for('candidate.dashboard') }}" class="btn btn-primary">
+                        Сбросить фильтры
+                    </a>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+
+    <footer class="footer">
+    <div class="container">
+        <div class="footer-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SkillScout" class="footer-logo">
+            <span class="footer-logo-text">SkillScout</span>
+        </div>
+
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h5 class="footer-title">МЕНЮ</h5>
+                <ul class="footer-menu">
+                    <li>
+                        <a href="{{ url_for('main.index') }}" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ГЛАВНАЯ
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> ЧТО ТАКОЕ SKILLSCOUT?
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-link">
+                            <img src="{{ url_for('static', filename='images/arrow_icon.png') }}" alt="Arrow" class="menu-arrow"> УСЛУГИ И ВОЗМОЖНОСТИ
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="footer-title">МЫ В СОЦИАЛЬНЫХ СЕТЯХ</h5>
+                <div class="social-circles">
+                    <a href="https://t.me/axel_Invincible" class="social-circle">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/axl_invincible" class="social-circle">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    <a href="#" class="social-circle">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h5 class="support-title">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</h5>
+                <h4 class="support-email">
+                    <span id="supportEmailText" onclick="copyEmail()" style="cursor: pointer;">AXL-TECH@BK.RU</span>
+                </h4>
+                <div id="copyOverlay" class="overlay">
+                    <div class="overlay-content">
+                        <span class="overlay-text">Email скопирован в буфер обмена!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-left">
+                <a href="{{ url_for('main.tou') }}" class="document-link">Пользовательское соглашение</a>
+            </div>
+            <div class="footer-bottom-center">
+                <a href="{{ url_for('main.politica') }}" class="document-link">Политика конфиденциальности</a>
+            </div>
+            <div class="footer-bottom-right">
+                <p class="copyright">2025 © SkillScout</p>
+            </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Управление боковым меню
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarToggle && sidebarMenu) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebarMenu.classList.toggle('active');
+                });
+                
+                // Закрытие меню при клике вне его
+                document.addEventListener('click', function(e) {
+                    if (!sidebarMenu.contains(e.target) && e.target !== sidebarToggle && 
+                        !sidebarToggle.contains(e.target)) {
+                        sidebarMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Обработка избранного
+            document.querySelectorAll('.btn-outline .fa-heart').forEach(heart => {
+                heart.addEventListener('click', function() {
+                    this.classList.toggle('far');
+                    this.classList.toggle('fas');
+                    this.classList.toggle('text-danger');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
